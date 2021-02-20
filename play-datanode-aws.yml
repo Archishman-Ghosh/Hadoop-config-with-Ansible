@@ -1,0 +1,47 @@
+-  hosts: Datanode
+   vars_files:
+     - var-datanode.yml
+   tasks:
+   - name: "Copy Hadoop rpm file"
+     copy:
+       src: "{{ hadoop_path }}"
+       dest: "/root"
+
+   - name: "Copy jdk rpm file"
+     copy:
+       src: "{{ jdk_path }}"
+       dest: "/root"
+
+   - name: "Instal jdk in the namenode"
+     command: "rpm -i -v -h {{ jdk_dest_path }}"
+     ignore_errors: yes
+
+   - name: "Instal hadoop in the namenode"
+     command: "rpm -i -v -h {{ hadoop_dest_path }} --force"
+     ignore_errors: yes
+   
+   - name: "Copy hdfs-site.xml file"
+     template:
+       src: "{{ hdfs_file }}"
+       dest: "/etc/hadoop"
+
+   - name: "Copy core-site.xml file"
+     copy:
+       src: "{{ core_file }}"
+       dest: "/etc/hadoop"
+
+   - name: "Delete any previous datanode directory"
+     shell: "{{ delete_directory }}"
+     ignore_errors: yes
+
+   - name: "Create directory for datanode"
+     file:
+       state: directory
+       path: "{{ datanode_directory }}"
+
+   - name: "Stop any running datanode"
+     shell: "{{ stop_datanode }}"
+     ignore_errors: yes
+
+   - name: "Start datanode"
+     shell: "{{ start_datanode }}"

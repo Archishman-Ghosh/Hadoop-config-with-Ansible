@@ -1,0 +1,6 @@
+<configuration>
+    <property>
+        <name>fs.default.name</name>
+        <value>hdfs://13.127.67.205:9001</value>
+    </property>
+</configuration>

@@ -1,0 +1,26 @@
+-  hosts: Client
+   vars_files:
+     - var-client.yml
+   tasks:
+   - name: "Copy Hadoop rpm file"
+     copy:
+       src: "{{ hadoop_path }}"
+       dest: "/root"
+
+   - name: "Copy jdk rpm file"
+     copy:
+       src: "{{ jdk_path }}"
+       dest: "/root"
+
+   - name: "Install jdk in the namenode"
+     command: "rpm -i -v -h {{ jdk_dest_path }}"
+     ignore_errors: yes
+
+   - name: "Install hadoop in the namenode"
+     command: "rpm -i -v -h {{ hadoop_dest_path }} --force"
+     ignore_errors: yes
+
+   - name: "Copy core-site.xml file"
+     copy:
+       src: "{{ core_file }}"
+       dest: "/etc/hadoop"

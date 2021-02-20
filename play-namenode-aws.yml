@@ -1,0 +1,50 @@
+-  hosts: Namenode
+   vars_files:
+     - var-namenode.yml
+   tasks:
+   - name: "Copy Hadoop rpm file"
+     copy:
+       src: "{{ hadoop_path }}"
+       dest: "/root"
+
+   - name: "Copy jdk rpm file"
+     copy:
+       src: "{{ jdk_path }}"
+       dest: "/root"
+
+   - name: "Instal jdk in the namenode"
+     command: "rpm -i -v -h {{ jdk_dest_path }}"
+     ignore_errors: yes
+
+   - name: "Instal hadoop in the namenode"
+     command: "rpm -i -v -h {{ hadoop_dest_path }} --force"
+     ignore_errors: yes
+   
+   - name: "Copy hdfs-site.xml file"
+     template:
+       src: "{{ hdfs_file }}"
+       dest: "/etc/hadoop"
+
+   - name: "Copy core-site.xml file"
+     copy:
+       src: "{{ core_file }}"
+       dest: "/etc/hadoop"
+
+   - name: "Delete any previous namenode directory"
+     shell: "{{ delete_directory }}"
+     ignore_errors: yes
+
+   - name: "Create directory for namenode"
+     file:
+       state: directory
+       path: "{{ namenode_directory }}"
+
+   - name: "Format namenode"
+     shell: "echo Y | hadoop namenode -format"
+
+   - name: "Stop any running namenode"
+     shell: "{{ stop_namenode }}"
+     ignore_errors: yes
+
+   - name: "Start namenode"
+     shell: "{{ start_namenode }}"
